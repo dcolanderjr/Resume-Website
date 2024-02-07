@@ -61,3 +61,12 @@ resource "aws_s3_bucket_policy" "dcolanderjr_resume" {
     }
   )
 }
+
+resource "aws_s3_object" "file" {
+    for_each = fileset(path.locals, "Websitefiles/*.{html,css,js}")
+    bucket = "kloudkamp.com"
+    key = replace(each.value, "/^Websitefiles/", "")
+    source = each.value
+    content_type = lookup(local.content_types, regex("\\.[^.]+$", each.value), null)
+    etag = filemd5(each.value)
+}
