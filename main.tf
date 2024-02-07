@@ -62,6 +62,12 @@ resource "aws_s3_bucket_policy" "dcolanderjr_resume" {
   )
 }
 
+# This creates the S3 object resource. This piece of code is a little intricate, so I will try to
+# sythesize it for you: the for_each instruction allows the content to be looped over all of the files
+# in the Websitefiles directory. The replace instruction removes the Websitefiles prefix from the file name.
+# The source instruction is the file path. The content_type instruction is a lookup table that maps file extensions
+# to their content types. The etag instruction is the file's MD5 hash which is necessary for versioning, and caching.
+# We will also be deploying a CloudFront distribution later, which will be in another file.
 resource "aws_s3_object" "file" {
     for_each = fileset(path.locals, "Websitefiles/*.{html,css,js}")
     bucket = "kloudkamp.com"
