@@ -43,7 +43,7 @@ resource "aws_s3_bucket_website_configuration" "dcolanderjr_resume" {
 }
 
 # This creates the S3 bucket policy that allows your website to be publicly viewable by others on the internet.
-  
+# Instead of manually creating it in the console, we will use Terraform to inject the policy.
 resource "aws_s3_bucket_policy" "dcolanderjr_resume" {
   bucket = "kloudkamp.com"
   policy = jsonencode(
