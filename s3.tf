@@ -1,10 +1,16 @@
 # Create bucket, and add desired tags(optional). For hosting a static website on S3, you must use the format xxx.com, or whatever
-# you want to call your website. I am using kloudkamp.com for this example, which I registered in Route53.
-resource "aws_s3_bucket" "dcolanderjr_resume" {
-    bucket = "kloudkamp.com"
+# you want to call your website. I am using www.kloudkamp.com for this example, which I registered in Route53.
+
+# Provider for Terraform, AWS, and working region
+provider "aws" {
+    region = "us-east-1"
+}
+
+resource "aws_s3_bucket" "www.kloudkamp.com" {
+    bucket = "www.kloudkamp.com"
     
     tags = {
-        Name = "dcolanderjr_resume"
+        Name = "www.kloudkamp.com"
         Environment = "Prod"
         Application = "Resume Website"
         Terraform = "True"
@@ -13,16 +19,16 @@ resource "aws_s3_bucket" "dcolanderjr_resume" {
 }
 
 # This enables versioning on the bucket, so that you can keep track of changes to your website as it changes.
-resource "aws_s3_bucket_versioning" "dcolanderjr_resume" {
-    bucket = "kloudkamp.com"
+resource "aws_s3_bucket_versioning" "www.kloudkamp.com" {
+    bucket = "www.kloudkamp.com"
     versioning_configuration {
         status = "Enabled"
     }
 }
 
 # This enables the bucket to be publically accessible, so that your website can be viewed from the internet.
-resource "aws_s3_bucket_public_access_block" "dcolanderjr_resume" {
-    bucket = "kloudkamp.com"
+resource "aws_s3_bucket_public_access_block" "www.kloudkamp.com" {
+    bucket = "www.kloudkamp.com"
 
     block_public_acls = false
     restrict_public_buckets = false
@@ -30,17 +36,18 @@ resource "aws_s3_bucket_public_access_block" "dcolanderjr_resume" {
 
 # This enables the "Static Website Hosting" option that is under the permissions in the S3 Console. The index.html
 # refers to your index.html file in the root directory of your website.
-resource "aws_s3_bucket_website_configuration" "dcolanderjr_resume" {
-    bucket = "kloudkamp.com"
+resource "aws_s3_bucket_website_configuration" "www.kloudkamp.com" {
+    bucket = "www.kloudkamp.com"
     index_document {
         suffix = "index.html"
     }
 }
 
 # This creates the S3 bucket policy that allows your website to be publicly viewable by others on the internet.
-# Instead of manually creating it in the console, we will use Terraform to inject the policy.
-resource "aws_s3_bucket_policy" "dcolanderjr_resume" {
-  bucket = "kloudkamp.com"
+# Instead of manually creating it in the console, we will use Terraform to inject the policy. The policy will only allow
+# traffic from the CloudFront distribution.
+resource "aws_s3_bucket_policy" "www.kloudkamp.com" {
+  bucket = "www.kloudkamp.com"
   policy = jsonencode(
     {
       "Version" : "2012-10-17",
@@ -50,7 +57,7 @@ resource "aws_s3_bucket_policy" "dcolanderjr_resume" {
           "Effect" : "Allow",
           "Principal" : "*",
           "Action" : "s3:GetObject",
-          "Resource" : "arn:aws:s3:::kloudkamp.com/*"
+          "Resource" : "arn:aws:s3:::www.kloudkamp.com/*"
         }
       ]
     }
@@ -65,7 +72,7 @@ resource "aws_s3_bucket_policy" "dcolanderjr_resume" {
 # We will also be deploying a CloudFront distribution later, which will be in another file.
 resource "aws_s3_object" "file" {
     for_each = fileset(path.locals, "Websitefiles/*.{html,css,js}")
-    bucket = "kloudkamp.com"
+    bucket = "www.kloudkamp.com"
     key = replace(each.value, "/^Websitefiles/", "")
     source = each.value
     content_type = lookup(local.content_types, regex("\\.[^.]+$", each.value), null)
