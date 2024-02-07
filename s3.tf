@@ -1,11 +1,5 @@
 # Create bucket, and add desired tags(optional). For hosting a static website on S3, you must use the format xxx.com, or whatever
 # you want to call your website. I am using www.www_kloudkamp_com for this example, which I registered in Route53.
-
-# Provider for Terraform, AWS, and working region
-provider "aws" {
-    region = "us-east-1"
-}
-
 resource "aws_s3_bucket" "www_kloudkamp_com" {
     bucket = "www.www_kloudkamp_com"
     

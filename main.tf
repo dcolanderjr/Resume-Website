@@ -15,3 +15,6 @@ module "cloudfront" {
     source = "cloudfront.tf"
 }
 
+module "outputs" {
+    source = "outputs.tf"
+}
