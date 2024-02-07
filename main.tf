@@ -44,11 +44,11 @@ resource "aws_s3_bucket_website_configuration" "dcolanderjr_resume" {
 
 # This creates the S3 bucket policy that allows your website to be publicly viewable by others on the internet.
   
-resource "aws_s3_bucket_policy" "bucket_policy" {
+resource "aws_s3_bucket_policy" "dcolanderjr_resume" {
   bucket = "kloudkamp.com"
   policy = jsonencode(
     {
-      "Version" : "2024-02-07",
+      "Version" : "2012-10-17",
       "Statement" : [
         {
           "Sid" : "PublicReadGetObject",
