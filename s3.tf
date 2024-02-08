@@ -37,33 +37,6 @@ resource "aws_s3_bucket_website_configuration" "website_config" {
     }
 }
 
-# This creates the S3 bucket policy that allows your website to be publicly viewable by others on the internet.
-# Instead of manually creating it in the console, we will use Terraform to inject the policy. The policy will only allow
-# traffic from the CloudFront distribution.
-
-resource "aws_s3_bucket_policy" "bucket_policy" {
-  bucket = "www.kloudkamp.com"
-
-  policy = jsonencode(
-    {
-      "Version" : "2012-10-17",
-      "Statement" : [
-        {
-          "Sid"       : "AllowCloudFront",
-          "Effect"    : "Allow",
-          "Principal" : {
-            "AWS" : "arn:aws:iam::cloudfront:user/E28WM3IYPPNP8T"
-          },
-          "Action"    : "s3:GetObject",
-          "Resource"  : [
-            "arn:aws:s3:::www.kloudkamp.com/*",
-            "arn:aws:s3:::www.kloudkamp.com*"
-          ]
-        }
-      ]
-    }
-  )
-}
 
 # This creates the S3 object resource. This piece of code is a little intricate, so I will try to
 # sythesize it for you: the for_each instruction allows the content to be looped over all of the files
@@ -71,6 +44,7 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
 # The source instruction is the file path. The content_type instruction is a lookup table that maps file extensions
 # to their content types. The etag instruction is the file's MD5 hash which is necessary for versioning, and caching.
 # We will also be deploying a CloudFront distribution later, which will be in another file.
+
 resource "aws_s3_object" "file" {
     for_each = fileset(path.module, "content/*.{html,css,js}")
     bucket = aws_s3_bucket.bucket_name.bucket
@@ -79,3 +53,35 @@ resource "aws_s3_object" "file" {
     content_type = lookup(module.locals, regex("\\.[^.]+$", each.value), null)
     etag = filemd5(each.value)
 }
+
+
+# This creates the S3 bucket policy that allows your website to be publicly viewable by others on the internet.
+# Instead of manually creating it in the console, we will use Terraform to inject the policy. The policy will only allow
+# traffic from the CloudFront distribution.
+resource "aws_s3_bucket_policy" "bucket_policy" {
+  bucket = "www.kloudkamp.com"
+
+  policy = jsonencode(
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "AllowCloudFrontServicePrincipalReadOnly",
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "cloudfront.amazonaws.com"
+          },
+          "Action": "s3:GetObject",
+          "Resource": "arn:aws:s3:::www.kloudkamp.com/*",
+          "Condition": {
+            "StringEquals": {
+              "AWS:SourceArn": "arn:aws:cloudfront::741890680366:distribution/E28WM3IYPPNP8T"
+            }
+          }
+        }
+      ]
+    }
+  )
+}
+
+

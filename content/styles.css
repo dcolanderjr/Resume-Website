@@ -95,7 +95,7 @@ li {
 
 /* Timeline Styles */
 .timeline {
-    border-left: 3px solid #4CAF50;
+    border-left: 3px solid #006e76;
     padding-left: 20px;
     margin-left: 20px;
     position: relative;
@@ -110,7 +110,7 @@ li {
 .timeline-dot {
     width: 10px;
     height: 10px;
-    background-color: #4CAF50;
+    background-color: #006e76;
     border-radius: 50%;
     position: absolute;
     left: -6px;
@@ -139,7 +139,7 @@ li {
 
 /* Section Styles */
 .resume-section h2 {
-    background-color: #4CAF50;
+    background-color: #006e76;
     color: white;
     padding: 5px 10px;
     display: inline-block;
