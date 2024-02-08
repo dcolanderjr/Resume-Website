@@ -52,7 +52,7 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
           "Sid"       : "AllowCloudFront",
           "Effect"    : "Allow",
           "Principal" : {
-            "AWS" : "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity E28WM3IYPPNP8T"
+            "AWS" : "arn:aws:iam::cloudfront:user/E28WM3IYPPNP8T"
           },
           "Action"    : "s3:GetObject",
           "Resource"  : [
